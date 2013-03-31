@@ -64,9 +64,7 @@ Route::post('discussion/create', array('before' => 'auth-user', 'main' => functi
 /*
 	View discussion
 */
-$patterns = array('discussion/(:any)', 'discussion/(:any)/(:num)');
-
-Route::get($patterns, function($slug, $page = 1) {
+Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slug, $page = 1) {
 	if(is_numeric($slug)) {
 		if( ! $discussion = Discussion::find($slug)) {
 			return Response::error(404);

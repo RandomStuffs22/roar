@@ -31,8 +31,6 @@ Route::action('csrf', function() {
 	View Index
 */
 Route::get(array('/', 'discussions', 'discussions/(:num)'), function($page = 1) {
-	Registry::set('categories', new Items(Category::all()));
-
 	$user = Auth::user();
 	$perpage = 10;
 
@@ -55,6 +53,7 @@ Route::get(array('/', 'discussions', 'discussions/(:num)'), function($page = 1) 
 
 	Registry::set('discussions', new Items($paginator->results));
 	Registry::set('paginator', $paginator->links());
+	Registry::set('categories', new Items(Category::all()));
 
 	return new Template('index');
 });
@@ -162,7 +161,7 @@ Route::post('register', function() {
 		'name' => $input['name'],
 		'email' => $input['email'],
 		'username' => $input['username'],
-		'password' => Hash::make($input['password'])
+		'password' => Hash::password($input['password'])
 	));
 
 	$user = User::search(array('username' => $input['username']));
