@@ -147,7 +147,7 @@ Route::post('discussion/(:any)', array('before' => 'auth-user', 'main' => functi
 
 	$now = gmdate('Y-m-d H:i:s');
 
-	$id = Post::create(array(
+	$post = Post::create(array(
 		'discussion' => $discussion->id,
 		'user' => $user->id,
 		'date' => $now,
@@ -173,7 +173,7 @@ Route::post('discussion/(:any)', array('before' => 'auth-user', 'main' => functi
 	$count = Post::where('discussion', '=', $discussion->id)->count();
 	$page = ceil($count / $perpage);
 
-	return Response::redirect('discussion/' . $discussion->slug . '/' . $page . '#post-' . $id);
+	return Response::redirect('discussion/' . $discussion->slug . '/' . $page . '#post-' . $post->id);
 }));
 
 /*
