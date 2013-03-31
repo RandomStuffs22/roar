@@ -8,59 +8,32 @@ Route::get('search', function() {
 });
 
 Route::post('search', function() {
-	$term = Input::get('query');
+	// search and save search ID
+	$term = filter_var(Input::get('query', ''), FILTER_SANITIZE_STRING);
 
-	$id = hash('crc32', $term);
-	$results = array();
+	Session::put(slug($term), $term);
 
-	// search topics
-	$perpage = 10;
-/*
-	$query = Query::table('topics')
-		->join('posts', 'posts.topic', '=', 'topics.id')
-		->where('title', 'like', $term . '%')
-		->or_where('posts.body', 'like', $term . '%')
-		->take($perpage * 10);
-*/
-
-	$query = Query::table('posts')
-		->where('body', 'like', '%' . $term . '%')
-		->take($perpage * 10);
-
-	if($query->count()) {
-		foreach($query->get('posts.id') as $post) {
-			$results[] = $post->id;
-		}
-	}
-
-	Session::put($id, $results);
-	
-	return Response::redirect('search/' . $id);
+	return Response::redirect('search/' . slug($term));
 });
 
 /*
 	View results
 */
-Route::get(array('search/(:any)', 'search/(:any)/(:num)'), function($id, $page = 1) {
-	$results = Session::get($id);
+Route::get(array('search/(:any)', 'search/(:any)/(:num)'), function($slug = '', $offset = 1) {
+	$term = Session::get($slug);
 
 	$perpage = 10;
 
-	$posts = Query::table('posts')
-		->join('discussions', 'discussions.id', '=', 'posts.discussion')
-		->where_in('posts.id', $results)
-		->take($perpage)
-		->skip(($page - 1) * $perpage)
+	$query = Post::join('discussions', 'discussions.id', '=', 'posts.discussion')
+		->where('posts.body', 'like', '%' . $term . '%');
+
+	$count = $query->count();
+
+	$posts = $query->take($perpage)
+		->skip(($offset - 1) * $perpage)
 		->get(array('posts.*', 'discussions.title', 'discussions.slug'));
 
-	$count = Query::table('posts')
-		->join('discussions', 'discussions.id', '=', 'posts.discussion')
-		->where_in('posts.id', $results)
-		->count();
-
-	$url = Uri::make('search/' . $id);
-
-	$paginator = new Paginator($posts, $count, $page, $perpage, $url);
+	$paginator = new Paginator($posts, $count, $offset, $perpage, Uri::to('search/' . $slug));
 
 	Registry::set('search_results', new Items($paginator->results));
 

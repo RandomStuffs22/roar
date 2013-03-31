@@ -1,6 +1,6 @@
 <?php
 
-class Post extends Model {
+class Post extends Record {
 
 	public static $table = 'posts';
 

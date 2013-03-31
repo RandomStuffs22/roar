@@ -1,14 +1,4 @@
-<?php namespace System;
-
-/**
- * Nano
- *
- * Lightweight php framework
- *
- * @package		nano
- * @author		k. wilson
- * @link		http://madebykieron.co.uk
- */
+<?php
 
 class Validator {
 
@@ -60,7 +50,7 @@ class Validator {
 			return strpos($str, $needle) !== false;
 		};
 
-		$this->methods['regex'] = function($str, $needle) {
+		$this->methods['regex'] = function($str, $pattern) {
 			return preg_match($pattern, $str);
 		};
 	}
@@ -90,7 +80,7 @@ class Validator {
 		}
 
 		if(isset($this->methods[$method]) === false) {
-			throw new \ErrorException('Validator method ' . $method . ' not found');
+			throw new ErrorException('Validator method ' . $method . ' not found');
 		}
 
 		$validator = $this->methods[$method];

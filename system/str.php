@@ -3,76 +3,90 @@
 /**
  * Nano
  *
- * Lightweight php framework
+ * Just another php framework
  *
  * @package		nano
- * @author		k. wilson
  * @link		http://madebykieron.co.uk
+ * @copyright	http://unlicense.org/
  */
-
-define('MB_STRING', function_exists('mb_get_info'));
 
 class Str {
 
-	public static function encoding() {
-		return Config::get('application.encoding');
+	/**
+	 * The string
+	 *
+	 * @var string
+	 */
+	private $string;
+
+
+	/**
+	 * Create a new instance of the Str class
+	 *
+	 * @param string
+	 */
+	public static function create($string = '') {
+		return new static($string);
 	}
 
-	public static function entities($value) {
-		return htmlentities($value, ENT_QUOTES, static::encoding(), false);
+	/**
+	 * Str constructor
+	 *
+	 * @param string
+	 */
+	public function __construct($string = '') {
+		$this->string = $string;
 	}
 
-	public static function lower($value) {
-		return MB_STRING ? mb_strtolower($value, static::encoding()) : strtolower($value);
+	/**
+	 * Strip tags
+	 *
+	 * @return object
+	 */
+	public function sanitize() {
+		$this->string = filter_var($this->string, FILTER_SANITIZE_STRING);
+
+		return $this;
 	}
 
-	public static function upper($value) {
-		return MB_STRING ? mb_strtoupper($value, static::encoding()) : strtoupper($value);
+	/**
+	 * Strips characters that has a numerical value >127 and <32.
+	 *
+	 * @return object
+	 */
+	public function strip() {
+		$this->string = filter_var($this->string, FILTER_SANITIZE_STRING | FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
+
+		return $this;
 	}
 
-	public static function length($value) {
-		return MB_STRING ? mb_strlen($value, static::encoding()) : strlen($value);
+	/**
+	 * Encodes characters with a numerical value >127 and <32.
+	 *
+	 * @return object
+	 */
+	public function encode() {
+		$this->string = filter_var($this->string, FILTER_SANITIZE_STRING | FILTER_FLAG_ENCODE_LOW | FILTER_FLAG_ENCODE_HIGH);
+
+		return $this;
 	}
 
-	public static function title($value) {
-		return MB_STRING ? mb_convert_case($value, MB_CASE_TITLE, static::encoding()) : ucwords(strtolower($value));
+	/**
+	 * Get the string
+	 *
+	 * @return string
+	 */
+	public function value() {
+		return $this->string;
 	}
 
-	public static function random($length = 16) {
-		$pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-		return substr(str_shuffle(str_repeat($pool, 5)), 0, $length);
-	}
-
-	public static function truncate($str, $limit = 10, $elipse = '&hellip;') {
-		$words = preg_split('/\s+/', $str);
-
-		if(count($words) <= $limit) {
-			return $str;
-		}
-
-		return implode(' ', array_slice($words, 0, $limit)) . $elipse;
-	}
-
-	public static function ascii($value) {
-		$foreign = Config::get('strings.foreign_characters');
-
-		$value = preg_replace(array_keys($foreign), array_values($foreign), $value);
-
-		return preg_replace('/[^\x09\x0A\x0D\x20-\x7E]/', '', $value);
-	}
-
-	public static function slug($title) {
-		$title = static::ascii($title);
-		$separator = '-';
-
-		// Remove all characters that are not the separator, letters, numbers, or whitespace.
-		$title = preg_replace('![^'.preg_quote($separator).'\pL\pN\s]+!u', '', static::lower($title));
-
-		// Replace all separator characters and whitespace by a single separator
-		$title = preg_replace('!['.preg_quote($separator).'\s]+!u', $separator, $title);
-
-		return trim($title, $separator);
+	/**
+	 * Magic method to return raw string
+	 *
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->string;
 	}
 
 }

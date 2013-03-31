@@ -2,16 +2,16 @@
 
 return array(
 	// Application URL
-	'url' => rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'),
+	'url' => '/',
 
 	// Application Index
-	'index' => 'index.php',
+	'index' => '',
 
 	// Application Timezone
 	'timezone' => 'Europe/London',
 
 	// Application Key
-	'key' => 'YourSecretKeyGoesHere',
+	'key' => hash('md5', 'Change me!'),
 
 	// Default Application Language
 	'language' => 'en_GB',

@@ -11,12 +11,12 @@ Route::get('profiles/(:any)', function($username) {
 	// get last 4 posts
 	$posts = Post::where('user', '=', $user->id)
 		->join('discussions', 'discussions.id', '=', 'posts.discussion')
-		->order_by('date', 'desc')
+		->sort('date', 'desc')
 		->take(4)
 		->get(array('posts.*', 'discussions.slug', 'discussions.title'));
 
 	Registry::set('user', $user);
-	
+
 	Registry::set('recent_posts', new Items($posts));
 
 	return new Template('profile');

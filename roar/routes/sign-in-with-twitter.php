@@ -1,9 +1,5 @@
 <?php
 
-function get_twitter_api() {
-	return new Twitter(Config::get('settings.twitter_consumer_key'), Config::get('settings.twitter_consumer_secret'));
-}
-
 /*
 	Login with twitter
 */
@@ -11,7 +7,7 @@ Route::get('sign-in-with-twitter', function() {
 
 	$api = get_twitter_api();
 
-	$callback = Uri::build(array('path' => Uri::make('callback')));
+	$callback = Uri::full('callback');
 
 	$token = $api->request_token($callback);
 
@@ -59,7 +55,7 @@ Route::get('callback', function() {
 		return Response::redirect('/');
 	}
 
-	$account = Json::decode($response);
+	$account = json_decode($response);
 
 	$user = User::search(array('username' => $account->screen_name));
 
@@ -72,20 +68,18 @@ Route::get('callback', function() {
 		$user = User::find($user->id);
 	}
 	else {
-		$id = User::create(array(
+		$user = User::create(array(
 			'role' => 'user',
-			'registered' => date('c'),
+			'registered' => gmdate('Y-m-d H:i:s'),
 			'name' => $account->name,
 			'username' => $account->screen_name,
 			'password' => '',
 			'token' => $token['oauth_token'],
 			'secret' => $token['oauth_token_secret']
 		));
-
-		$user = User::find($id);
 	}
 
-	Session::forget('request_tokens');
+	Session::erase('request_tokens');
 
 	Session::put(Auth::$session, $user->id);
 

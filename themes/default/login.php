@@ -6,7 +6,7 @@
 
 	<fieldset>
 		<p><label>Username<br>
-		<?php echo Form::text('username', Input::old('username')); ?></label></p>
+		<?php echo Form::text('username', Input::previous('username')); ?></label></p>
 
 		<p><label>Password<br>
 		<?php echo Form::password('password'); ?></label></p>

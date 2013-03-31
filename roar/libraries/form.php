@@ -1,14 +1,4 @@
-<?php namespace System;
-
-/**
- * Nano
- *
- * Lightweight php framework
- *
- * @package		nano
- * @author		k. wilson
- * @link		http://madebykieron.co.uk
- */
+<?php
 
 class Form {
 
@@ -29,7 +19,7 @@ class Form {
 	}
 
 	protected static function action($action) {
-		return Uri::make($action);
+		return Uri::to($action);
 	}
 
 	public static function open_multipart($action, $attributes = array()) {

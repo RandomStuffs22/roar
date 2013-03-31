@@ -13,21 +13,21 @@
 					<fieldset>
 						<p>
 							<label for="real_name"><?php echo __('users.real_name'); ?>:</label>
-							<input id="real_name" name="real_name" value="<?php echo Input::old('real_name', $user->real_name); ?>">
+							<input id="real_name" name="real_name" value="<?php echo Input::previous('real_name', $user->real_name); ?>">
 
 							<em><?php echo __('users.real_name_explain'); ?></em>
 						</p>
 
 						<p>
 							<label for="username"><?php echo __('users.username'); ?>:</label>
-							<input id="username" name="username" value="<?php echo Input::old('username', $user->username); ?>">
+							<input id="username" name="username" value="<?php echo Input::previous('username', $user->username); ?>">
 
 							<em><?php echo __('users.username_explain'); ?></em>
 						</p>
 
 						<p>
 							<label for="email"><?php echo __('users.email'); ?>:</label>
-							<input id="email" name="email" value="<?php echo Input::old('email', $user->email); ?>">
+							<input id="email" name="email" value="<?php echo Input::previous('email', $user->email); ?>">
 
 							<em><?php echo __('users.email_explain'); ?></em>
 						</p>
@@ -41,7 +41,7 @@
 
 						<p>
 							<label for="bio"><?php echo __('users.bio'); ?>:</label>
-							<textarea id="bio" name="bio"><?php echo Input::old('bio', $user->bio); ?></textarea>
+							<textarea id="bio" name="bio"><?php echo Input::previous('bio', $user->bio); ?></textarea>
 
 							<em><?php echo __('users.bio_explain'); ?></em>
 						</p>
@@ -50,7 +50,7 @@
 							<label for="status"><?php echo __('users.status'); ?>:</label>
 							<select id="status" name="status">
 								<?php foreach($statuses as $value => $status): ?>
-								<?php $selected = (Input::old('status', $user->status) == $value) ? ' selected' : ''; ?>
+								<?php $selected = (Input::previous('status', $user->status) == $value) ? ' selected' : ''; ?>
 								<option value="<?php echo $value; ?>"<?php echo $selected; ?>><?php echo $status; ?></option>
 								<?php endforeach; ?>
 							</select>
@@ -62,7 +62,7 @@
 							<label for="role"><?php echo __('users.role'); ?>:</label>
 							<select id="role" name="role">
 								<?php foreach($roles as $value => $template): ?>
-								<?php $selected = (Input::old('role', $user->role) == $value) ? ' selected' : ''; ?>
+								<?php $selected = (Input::previous('role', $user->role) == $value) ? ' selected' : ''; ?>
 								<option value="<?php echo $value; ?>"<?php echo $selected; ?>><?php echo $template; ?></option>
 								<?php endforeach; ?>
 							</select>

@@ -19,10 +19,13 @@ function post_id() {
 }
 
 function post_title() {
-	$post = Registry::get('post');
-	$topic = Registry::get('topic');
+	if($post = Registry::get('post')) {
+		return $post->title;
+	}
 
-	return isset($post->title) ? $post->title : (isset($topic->title) ? $topic->title : '');
+	if($topic = Registry::get('topic')) {
+		return $topic->title;
+	}
 }
 
 function post_user() {

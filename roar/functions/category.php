@@ -15,19 +15,19 @@ function categories() {
 }
 
 function category_id() {
-	return Registry::get('category')->id;
+	return Registry::prop('category', 'id');
 }
 
 function category_title() {
-	return Registry::get('category')->title;
+	return Registry::prop('category', 'title');
 }
 
 function category_description() {
-	return Registry::get('category')->description;
+	return Registry::prop('category', 'description');
 }
 
 function category_slug() {
-	return Registry::get('category')->slug;
+	return Registry::prop('category', 'slug');
 }
 
 function category_url() {
@@ -35,7 +35,7 @@ function category_url() {
 }
 
 function category_post_count() {
-	return Registry::get('category')->posts;
+	return Registry::prop('category', 'posts');
 }
 
 function category_paging() {

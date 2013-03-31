@@ -6,7 +6,7 @@
 		<div class="gs gs-1-3">
 		<?php echo Form::open('search'); ?>
 			<p><label>Search Term<br>
-			<?php echo Form::search('query', Input::old('query'), array('class' => 'gs-4-5')); ?></label></p>
+			<?php echo Form::search('query', Input::previous('query'), array('class' => 'gs-4-5')); ?></label></p>
 
 			<p><?php echo Form::button('Search', array('type' => 'submit', 'class' => 'btn')); ?></p>
 		<?php echo Form::close(); ?>

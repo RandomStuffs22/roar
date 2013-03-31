@@ -1,16 +1,14 @@
-<?php namespace System;
-
-/**
- * Nano
- *
- * Lightweight php framework
- *
- * @package		nano
- * @author		k. wilson
- * @link		http://madebykieron.co.uk
- */
+<?php
 
 class Html {
+
+	public static $encoding;
+
+	public static function encoding() {
+		if(is_null(static::$encoding)) static::$encoding = Config::app('encoding');
+
+		return static::$encoding;
+	}
 
 	public static function attributes($attributes) {
 		if(empty($attributes)) return '';
@@ -25,15 +23,15 @@ class Html {
 	}
 
 	public static function entities($value) {
-		return htmlentities($value, ENT_QUOTES, Config::get('application.encoding'), false);
+		return htmlentities($value, ENT_QUOTES, static::encoding(), false);
 	}
 
 	public static function decode($value) {
-		return html_entity_decode($value, ENT_QUOTES, Config::get('application.encoding'));
+		return html_entity_decode($value, ENT_QUOTES, static::encoding());
 	}
 
 	public static function specialchars($value) {
-		return htmlspecialchars($value, ENT_QUOTES, Config::get('application.encoding'), false);
+		return htmlspecialchars($value, ENT_QUOTES, static::encoding(), false);
 	}
 
 	public static function element($name, $content = '', $attributes = null) {
@@ -50,13 +48,19 @@ class Html {
 	}
 
 	public static function link($uri, $title = '', $attributes = array()) {
-		if(strpos('#', $uri) !== 0) $uri = Uri::make($uri);
+		if(strpos('#', $uri) !== 0) $uri = Uri::to($uri);
 
 		if($title == '') $title = $uri;
 
 		$attributes['href'] = $uri;
 
 		return static::element('a', $title, $attributes);
+	}
+
+	public static function Markdown($text) {
+		$md = new Markdown;
+
+		return $md->transform($text);
 	}
 
 }

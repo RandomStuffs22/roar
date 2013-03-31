@@ -3,13 +3,13 @@
 /*
 	Create topic
 */
-Route::get('discussion/create', array('before' => 'auth-user', 'do' => function() {
+Route::get('discussion/create', array('before' => 'auth-user', 'main' => function() {
 	Registry::set('categories', new Items(Category::all()));
 	$vars['categories'] = Category::dropdown();
 	return new Template('discussion_create', $vars);
 }));
 
-Route::post('discussion/create', array('before' => 'auth-user', 'do' => function() {
+Route::post('discussion/create', array('before' => 'auth-user', 'main' => function() {
 	$markdown = new Markdown;
 	$post = $markdown->transform(Input::get('post'));
 
@@ -17,13 +17,13 @@ Route::post('discussion/create', array('before' => 'auth-user', 'do' => function
 	$title = Input::get('title');
 	$description = Input::get('description');
 
-	$slug = Str::slug($title);
-	$now = date('c');
+	$slug = slug($title);
+	$now = date('y-m-d H:i:s');
 
 	if(Discussion::slug($slug)) {
 		Input::flash();
 
-		Notify::notice('Discussion already exists');
+		Notify::notice('Discussion already exists, ' . Html::link('discussion/' . $slug, 'View it here'));
 
 		return Response::redirect('discussion/create');
 	}
@@ -64,7 +64,9 @@ Route::post('discussion/create', array('before' => 'auth-user', 'do' => function
 /*
 	View discussion
 */
-Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slug, $page = 1) {
+$patterns = array('discussion/(:any)', 'discussion/(:any)/(:num)');
+
+Route::get($patterns, function($slug, $page = 1) {
 	if(is_numeric($slug)) {
 		if( ! $discussion = Discussion::find($slug)) {
 			return Response::error(404);
@@ -86,14 +88,14 @@ Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slu
 
 		if($query->count()) {
 			$query->update(array(
-				'viewed' => date('c')
+				'viewed' => gmdate('Y-m-d H:i:s')
 			));
 		}
 		else {
 			$query->insert(array(
 				'user' => $user->id,
 				'discussion' => $discussion->id,
-				'viewed' => date('c')
+				'viewed' => gmdate('Y-m-d H:i:s')
 			));
 		}
 	}
@@ -103,9 +105,9 @@ Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slu
 
 	$query = Post::where('discussion', '=', $discussion->id);
 	$count = $query->count();
-	$posts = $query->order_by('date')->take($perpage)->skip(($page - 1) * $perpage)->get();
+	$posts = $query->sort('date')->take($perpage)->skip(($page - 1) * $perpage)->get();
 
-	$url = Uri::make('discussion/' . $discussion->slug);
+	$url = Uri::to('discussion/' . $discussion->slug);
 	$paginator = new Paginator($posts, $count, $page, $perpage, $url);
 
 	// set data for theme functions
@@ -121,7 +123,7 @@ Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slu
 /*
 	Post a reply
 */
-Route::post('discussion/(:any)', array('before' => 'auth-user', 'do' => function($slug) {
+Route::post('discussion/(:any)', array('before' => 'auth-user', 'main' => function($slug) {
 	if( ! $discussion = Discussion::slug($slug)) {
 		return Response::error(404);
 	}
@@ -145,7 +147,7 @@ Route::post('discussion/(:any)', array('before' => 'auth-user', 'do' => function
 	// get authed user
 	$user = User::find(Auth::user()->id);
 
-	$now = date('c');
+	$now = gmdate('Y-m-d H:i:s');
 
 	$id = Post::create(array(
 		'discussion' => $discussion->id,
@@ -179,7 +181,7 @@ Route::post('discussion/(:any)', array('before' => 'auth-user', 'do' => function
 /*
 	Up Vote a discussion
 */
-Route::get('vote/(:num)', array('before' => 'auth-user', 'do' => function($id) {
+Route::get('vote/(:num)', array('before' => 'auth-user', 'main' => function($id) {
 	if( ! $discussion = Discussion::find($id)) {
 		return Response::error(404);
 	}

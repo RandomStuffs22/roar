@@ -12,7 +12,7 @@
 		<fieldset class="half split">
 			<p>
 				<label for="name"><?php echo __('users.name', 'Display name'); ?>:</label>
-				<input autofocus id="name" name="name" value="<?php echo Input::old('name'); ?>">
+				<input autofocus id="name" name="name" value="<?php echo Input::previous('name'); ?>">
 
 				<em><?php echo __('users.name_explain',
 					'The user&rsquo;s real name. Used in author bylines (visible to public).'); ?></em>
@@ -26,7 +26,7 @@
 						'editor' => __('users.editor', 'Editor'),
 						'user' => __('users.user', 'User')
 					) as $value => $role): ?>
-					<?php $selected = (Input::old('role') == $value) ? ' selected' : ''; ?>
+					<?php $selected = (Input::previous('role') == $value) ? ' selected' : ''; ?>
 					<option value="<?php echo $value; ?>"<?php echo $selected; ?>>
 						<?php echo $role; ?>
 					</option>
@@ -46,7 +46,7 @@
 
 			<p>
 				<label for="username"><?php echo __('users.username', 'Username'); ?>:</label>
-				<input id="username" name="username" value="<?php echo Input::old('username'); ?>">
+				<input id="username" name="username" value="<?php echo Input::previous('username'); ?>">
 
 				<em><?php echo __('users.username_explain', 'The desired username. Can be changed later.'); ?></em>
 			</p>
@@ -61,7 +61,7 @@
 
 			<p>
 				<label for="email"><?php echo __('users.email', 'Email'); ?>:</label>
-				<input id="email" name="email" value="<?php echo Input::old('email'); ?>">
+				<input id="email" name="email" value="<?php echo Input::previous('email'); ?>">
 
 				<em><?php echo __('users.email_explain',
 					'The user&rsquo;s email address. Needed if the user forgets their password.'); ?></em>

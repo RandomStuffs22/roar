@@ -3,7 +3,7 @@
 /*
 	List all
 */
-Route::get(array('admin/users', 'admin/users/(:num)'), array('before' => 'auth', 'do' => function($page = 1) {
+Route::get(array('admin/users', 'admin/users/(:num)'), array('before' => 'auth', 'main' => function($page = 1) {
 	$vars['messages'] = Notify::read();
 	$vars['users'] = User::paginate($page);
 
@@ -15,7 +15,7 @@ Route::get(array('admin/users', 'admin/users/(:num)'), array('before' => 'auth',
 /*
 	Edit
 */
-Route::get('admin/users/edit/(:num)', array('before' => 'auth', 'do' => function($id) {
+Route::get('admin/users/edit/(:num)', array('before' => 'auth', 'main' => function($id) {
 	$vars['messages'] = Notify::read();
 	$vars['token'] = Csrf::token();
 	$vars['user'] = User::find($id);
@@ -26,7 +26,7 @@ Route::get('admin/users/edit/(:num)', array('before' => 'auth', 'do' => function
 		->nest('footer', 'partials/footer');
 }));
 
-Route::post('admin/users/edit/(:num)', array('before' => 'auth', 'do' => function($id) {
+Route::post('admin/users/edit/(:num)', array('before' => 'auth', 'main' => function($id) {
 	$input = Input::get_array(array('role', 'name', 'email', 'username', 'password'));
 	$password_reset = false;
 
@@ -70,7 +70,7 @@ Route::post('admin/users/edit/(:num)', array('before' => 'auth', 'do' => functio
 /*
 	Add
 */
-Route::get('admin/users/add', array('before' => 'auth', 'do' => function() {
+Route::get('admin/users/add', array('before' => 'auth', 'main' => function() {
 	$vars['messages'] = Notify::read();
 	$vars['token'] = Csrf::token();
 	$vars['statuses'] = array('inactive' => __('users.inactive'), 'active' => __('users.active'));
@@ -81,7 +81,7 @@ Route::get('admin/users/add', array('before' => 'auth', 'do' => function() {
 		->nest('footer', 'partials/footer');
 }));
 
-Route::post('admin/users/add', array('before' => 'auth', 'do' => function() {
+Route::post('admin/users/add', array('before' => 'auth', 'main' => function() {
 	$input = Input::get_array(array('role', 'name', 'email', 'username', 'password'));
 
 	$validator = new Validator($input);

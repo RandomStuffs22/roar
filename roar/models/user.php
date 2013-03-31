@@ -1,14 +1,13 @@
 <?php
 
-class User extends Model {
+class User extends Record {
 
 	public static $table = 'users';
 
-	public static function search($params = array()) {
-		$query = Query::table(static::$table);
-
+	public static function search($params) {
 		foreach($params as $key => $value) {
-			$query->where($key, '=', $value);
+			if( ! isset($query)) $query = static::where($key, '=', $value);
+			else $query->where($key, '=', $value);
 		}
 
 		return $query->fetch();

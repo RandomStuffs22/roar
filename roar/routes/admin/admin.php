@@ -17,7 +17,7 @@ Route::get('admin/login', function() {
 		->nest('footer', 'partials/footer');
 });
 
-Route::post('admin/login', array('before' => 'csrf', 'do' => function() {
+Route::post('admin/login', array('before' => 'csrf', 'main' => function() {
 	if( ! Auth::attempt(Input::get('user'), Input::get('pass'))) {
 		Notify::error(array('Username or password is wrong.'));
 

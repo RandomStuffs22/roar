@@ -1,14 +1,4 @@
-<?php namespace System;
-
-/**
- * Nano
- *
- * Lightweight php framework
- *
- * @package		nano
- * @author		k. wilson
- * @link		http://madebykieron.co.uk
- */
+<?php
 
 class Paginator {
 
@@ -18,7 +8,7 @@ class Paginator {
 
 	public $page = 1;
 
-	public $per_page = 10;
+	public $perpage = 10;
 
 	public function __construct($results, $count, $page, $perpage, $url) {
 		$this->results = $results;
@@ -26,6 +16,28 @@ class Paginator {
 		$this->page = $page;
 		$this->perpage = $perpage;
 		$this->url = rtrim($url, '/');
+	}
+
+	public function next_link($text = 'Next &rarr;', $default = '') {
+		$pages = ceil($this->count / $this->perpage);
+
+		if($this->page < $pages) {
+			$page = $this->page + 1;
+
+			return '<a href="' . $this->url . '/' . $page . '">' . $text . '</a>';
+		}
+
+		return $default;
+	}
+
+	public function prev_link($text = '&larr; Previous', $default = '') {
+		if($this->page > 1) {
+			$page = $this->page - 1;
+
+			return '<a href="' . $this->url . '/' . $page . '">' . $text . '</a>';
+		}
+
+		return $default;
 	}
 
 	public function links() {

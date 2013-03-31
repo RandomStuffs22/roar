@@ -1,143 +1,44 @@
 <?php
 
-/*
-	Array helpers
-*/
+/**
+ * Nano
+ *
+ * Just another php framework
+ *
+ * @package		nano
+ * @link		http://madebykieron.co.uk
+ * @copyright	http://unlicense.org/
+ */
 
-// Get an item from an array using "dot" notation.
-function array_get($array, $key, $default = null) {
-	if(is_null($key)) return $array;
-
-	foreach(explode('.', $key) as $segment) {
-		if(!is_array($array) or !array_key_exists($segment, $array)) {
-			return value($default);
-		}
-
-		$array = $array[$segment];
-	}
-
-	return $array;
-}
-
-// Set an array item to a given value using "dot" notation.
-function array_set(&$array, $key, $value) {
-	if (is_null($key)) return $array = $value;
-
-	$keys = explode('.', $key);
-
-	while(count($keys) > 1) {
-		$key = array_shift($keys);
-
-		if(!isset($array[$key]) or !is_array($array[$key])) {
-			$array[$key] = array();
-		}
-
-		$array =& $array[$key];
-	}
-
-	$array[array_shift($keys)] = $value;
-}
-
-// Remove an array item from a given array using "dot" notation.
-function array_forget(&$array, $key) {
-	$keys = explode('.', $key);
-
-	while(count($keys) > 1) {
-		$key = array_shift($keys);
-
-		if( ! isset($array[$key]) or ! is_array($array[$key])) {
-			return;
-		}
-
-		$array =& $array[$key];
-	}
-
-	unset($array[array_shift($keys)]);
-}
-
-// Divide an array into two arrays. One with keys and the other with values.
-function array_divide($array) {
-	return array(array_keys($array), array_values($array));
-}
-
-// Recursively remove slashes from array keys and values.
-function array_strip_slashes($array) {
-	$result = array();
-
-	foreach($array as $key => $value) {
-		$key = stripslashes($key);
-
-		if(is_array($value)) {
-			$result[$key] = array_strip_slashes($value);
-		}
-		else {
-			$result[$key] = stripslashes($value);
-		}
-	}
-
-	return $result;
-}
-
-/*
-	String Helpers
-*/
-
-// Cap a string with a single instance of the given string.
-function str_finish($value, $cap) {
-	return rtrim($value, $cap) . $cap;
-}
-
-// Determine if a given string contains a given sub-string.
-function str_contains($haystack, $needle) {
-	return strpos($haystack, $needle) !== false;
-}
-
-// Determine if a given string begins with a given value.
-function starts_with($haystack, $needle) {
-	return strpos($haystack, $needle) === 0;
-}
-
-// Determine if a given string ends with a given value.
-function ends_with($haystack, $needle) {
-	return $needle == substr($haystack, strlen($haystack) - strlen($needle));
-}
-
-/*
-	View helpers
-*/
-
-// Generate an application URL to an asset.
+/**
+ * Get a relative uri to be used with a view
+ *
+ * @example asset('styles.css');
+ *
+ * @param string
+ * @return string
+ */
 function asset($uri) {
-	return str_finish(System\Config::get('application.url'), '/') . $uri;
+	return rtrim(Config::app('url'), '/') . '/' . $uri;
 }
 
-// Generate an application URL.
-function url($url = '') {
-	return System\Uri::make($url);
+/**
+ * Alias to class uri to method
+ *
+ * @param string
+ * @return string
+ */
+function uri_to($uri) {
+	return Uri::to($uri);
 }
 
-// Convert HTML characters to entities.
-function e($value) {
-	return System\Html::entities($value);
-}
-
-// Render the given view.
-function render($view, $data = array()) {
-	if (is_null($view)) return '';
-
-	return System\View::make($view, $data)->render();
-}
-
-/*
-	Misc
-*/
-
-// Determine if "Magic Quotes" are enabled on the server.
-function magic_quotes() {
-	return function_exists('get_magic_quotes_gpc') and get_magic_quotes_gpc();
-}
-
-// Data dump
+/**
+ * Debugging function, simply a var_dump wrapper
+ *
+ * @example dd($something, $another);
+ *
+ * @param mixed
+ */
 function dd() {
 	echo '<pre>';
 	call_user_func_array('var_dump', func_get_args());
@@ -145,19 +46,35 @@ function dd() {
 	exit;
 }
 
-// Determine if the current version of PHP is at least the supplied version.
-function has_php($version) {
-	return version_compare(PHP_VERSION, $version) >= 0;
+/**
+ * Generates a random string
+ *
+ * @param int Size
+ * @return string
+ */
+function noise($size = 32) {
+	$pool = 'abcefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+
+	return substr(str_shuffle(str_repeat($pool, 3)), 0, $size);
 }
 
-// Return the value of the given item.
-function value($value) {
-	return (is_callable($value) and ! is_string($value)) ? call_user_func($value) : $value;
+/**
+ * Normalise a string replacing foreign characters
+ *
+ * @param string
+ * @return string
+ */
+function normalize($str) {
+	$a = array('À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'ÿ', 'Ā', 'ā', 'Ă', 'ă', 'Ą', 'ą', 'Ć', 'ć', 'Ĉ', 'ĉ', 'Ċ', 'ċ', 'Č', 'č', 'Ď', 'ď', 'Đ', 'đ', 'Ē', 'ē', 'Ĕ', 'ĕ', 'Ė', 'ė', 'Ę', 'ę', 'Ě', 'ě', 'Ĝ', 'ĝ', 'Ğ', 'ğ', 'Ġ', 'ġ', 'Ģ', 'ģ', 'Ĥ', 'ĥ', 'Ħ', 'ħ', 'Ĩ', 'ĩ', 'Ī', 'ī', 'Ĭ', 'ĭ', 'Į', 'į', 'İ', 'ı', 'Ĳ', 'ĳ', 'Ĵ', 'ĵ', 'Ķ', 'ķ', 'Ĺ', 'ĺ', 'Ļ', 'ļ', 'Ľ', 'ľ', 'Ŀ', 'ŀ', 'Ł', 'ł', 'Ń', 'ń', 'Ņ', 'ņ', 'Ň', 'ň', 'ŉ', 'Ō', 'ō', 'Ŏ', 'ŏ', 'Ő', 'ő', 'Œ', 'œ', 'Ŕ', 'ŕ', 'Ŗ', 'ŗ', 'Ř', 'ř', 'Ś', 'ś', 'Ŝ', 'ŝ', 'Ş', 'ş', 'Š', 'š', 'Ţ', 'ţ', 'Ť', 'ť', 'Ŧ', 'ŧ', 'Ũ', 'ũ', 'Ū', 'ū', 'Ŭ', 'ŭ', 'Ů', 'ů', 'Ű', 'ű', 'Ų', 'ų', 'Ŵ', 'ŵ', 'Ŷ', 'ŷ', 'Ÿ', 'Ź', 'ź', 'Ż', 'ż', 'Ž', 'ž', 'ſ', 'ƒ', 'Ơ', 'ơ', 'Ư', 'ư', 'Ǎ', 'ǎ', 'Ǐ', 'ǐ', 'Ǒ', 'ǒ', 'Ǔ', 'ǔ', 'Ǖ', 'ǖ', 'Ǘ', 'ǘ', 'Ǚ', 'ǚ', 'Ǜ', 'ǜ', 'Ǻ', 'ǻ', 'Ǽ', 'ǽ', 'Ǿ', 'ǿ');
+
+	$b = array('A', 'A', 'A', 'A', 'A', 'A', 'AE', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'D', 'N', 'O', 'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y', 's', 'a', 'a', 'a', 'a', 'a', 'a', 'ae', 'c', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'y', 'y', 'A', 'a', 'A', 'a', 'A', 'a', 'C', 'c', 'C', 'c', 'C', 'c', 'C', 'c', 'D', 'd', 'D', 'd', 'E', 'e', 'E', 'e', 'E', 'e', 'E', 'e', 'E', 'e', 'G', 'g', 'G', 'g', 'G', 'g', 'G', 'g', 'H', 'h', 'H', 'h', 'I', 'i', 'I', 'i', 'I', 'i', 'I', 'i', 'I', 'i', 'IJ', 'ij', 'J', 'j', 'K', 'k', 'L', 'l', 'L', 'l', 'L', 'l', 'L', 'l', 'l', 'l', 'N', 'n', 'N', 'n', 'N', 'n', 'n', 'O', 'o', 'O', 'o', 'O', 'o', 'OE', 'oe', 'R', 'r', 'R', 'r', 'R', 'r', 'S', 's', 'S', 's', 'S', 's', 'S', 's', 'T', 't', 'T', 't', 'T', 't', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'W', 'w', 'Y', 'y', 'Y', 'Z', 'z', 'Z', 'z', 'Z', 'z', 's', 'f', 'O', 'o', 'U', 'u', 'A', 'a', 'I', 'i', 'O', 'o', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'A', 'a', 'AE', 'ae', 'O', 'o');
+
+	return str_replace($a, $b, $str);
 }
 
-// Calculate the human-readable file size (with proper units).
-function get_file_size($size) {
-	$units = array('Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB');
-
-	return round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . ' ' . $units[$i];
+/**
+ * Encode html to entities
+ */
+function e($str) {
+	return htmlspecialchars($str, ENT_NOQUOTES, Config::app('encoding'), false);
 }

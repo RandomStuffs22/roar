@@ -6,13 +6,13 @@
 
 	<fieldset>
 		<p><label>Name<br>
-		<?php echo Form::input('name', Input::old('name')); ?></label></p>
+		<?php echo Form::input('name', Input::previous('name')); ?></label></p>
 
 		<p><label>Email<br>
-		<?php echo Form::input('email', Input::old('email')); ?></label></p>
+		<?php echo Form::input('email', Input::previous('email')); ?></label></p>
 
 		<p><label>Username<br>
-		<?php echo Form::input('username', Input::old('username')); ?></label></p>
+		<?php echo Form::input('username', Input::previous('username')); ?></label></p>
 
 		<p><label>Password<br>
 		<?php echo Form::password('password'); ?></label></p>

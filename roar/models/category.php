@@ -1,13 +1,11 @@
 <?php
 
-class Category extends Model {
+class Category extends Record {
 
 	public static $table = 'categories';
 
 	public static function slug($str) {
-		if($itm = static::where('slug', '=', $str)->fetch()) {
-			return new static($itm->id);
-		}
+		return static::where('slug', '=', $str)->fetch();
 	}
 
 	public static function dropdown() {
@@ -21,11 +19,16 @@ class Category extends Model {
 	}
 
 	public static function all() {
-		$sql = 'select categories.*, coalesce(sum(discussions.replies), 0) as posts from categories
+		$sql = '
+			select categories.*, coalesce(count(discussions.id), 0) as posts
+			from categories
 			left join discussions on (discussions.category = categories.id)
-			group by discussions.category';
+			group by discussions.category
+		';
 
-		return DB::query($sql);
+		list($result, $statement) = DB::ask($sql);
+
+		return $statement->fetchAll(PDO::FETCH_OBJ);
 	}
 
 }

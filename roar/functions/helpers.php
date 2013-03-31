@@ -1,7 +1,7 @@
 <?php
 
 function base_url($path = '') {
-	return Uri::make($path);
+	return Uri::to($path);
 }
 
 function base_path() {

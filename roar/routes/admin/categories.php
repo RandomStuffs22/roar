@@ -3,7 +3,7 @@
 /*
 	List all
 */
-Route::get(array('admin/categories', 'admin/categories/(:num)'), array('before' => 'auth', 'do' => function($page = 1) {
+Route::get(array('admin/categories', 'admin/categories/(:num)'), array('before' => 'auth', 'main' => function($page = 1) {
 	$vars['messages'] = Notify::read();
 	$vars['categories'] = Category::paginate($page);
 
@@ -15,7 +15,7 @@ Route::get(array('admin/categories', 'admin/categories/(:num)'), array('before' 
 /*
 	Edit
 */
-Route::get('admin/categories/edit/(:num)', array('before' => 'auth', 'do' => function($id) {
+Route::get('admin/categories/edit/(:num)', array('before' => 'auth', 'main' => function($id) {
 	$vars['messages'] = Notify::read();
 	$vars['token'] = Csrf::token();
 	$vars['category'] = Category::find($id);
@@ -25,7 +25,7 @@ Route::get('admin/categories/edit/(:num)', array('before' => 'auth', 'do' => fun
 		->nest('footer', 'partials/footer');
 }));
 
-Route::post('admin/categories/edit/(:num)', array('before' => 'auth', 'do' => function($id) {
+Route::post('admin/categories/edit/(:num)', array('before' => 'auth', 'main' => function($id) {
 	$input = Input::get_array(array('title', 'slug', 'description'));
 
 	$validator = new Validator($input);
@@ -35,7 +35,7 @@ Route::post('admin/categories/edit/(:num)', array('before' => 'auth', 'do' => fu
 
 	if($errors = $validator->errors()) {
 		Input::flash();
-		
+
 		Notify::error($errors);
 
 		return Response::redirect('admin/categories/edit/' . $id);
@@ -57,7 +57,7 @@ Route::post('admin/categories/edit/(:num)', array('before' => 'auth', 'do' => fu
 /*
 	Add
 */
-Route::get('admin/categories/add', array('before' => 'auth', 'do' => function() {
+Route::get('admin/categories/add', array('before' => 'auth', 'main' => function() {
 	$vars['messages'] = Notify::read();
 	$vars['token'] = Csrf::token();
 
@@ -66,7 +66,7 @@ Route::get('admin/categories/add', array('before' => 'auth', 'do' => function() 
 		->nest('footer', 'partials/footer');
 }));
 
-Route::post('admin/categories/add', array('before' => 'auth', 'do' => function() {
+Route::post('admin/categories/add', array('before' => 'auth', 'main' => function() {
 	$input = Input::get_array(array('title', 'slug', 'description'));
 
 	$validator = new Validator($input);
@@ -76,7 +76,7 @@ Route::post('admin/categories/add', array('before' => 'auth', 'do' => function()
 
 	if($errors = $validator->errors()) {
 		Input::flash();
-		
+
 		Notify::error($errors);
 
 		return Response::redirect('admin/categories/add');

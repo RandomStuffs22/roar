@@ -1,7 +1,7 @@
 <?php
 
 function discussions() {
-	$items = Registry::get('discussions');
+	$items = Registry::get('discussions', new Items());
 
 	if($item = $items->valid()) {
 		// register single post
@@ -62,7 +62,10 @@ function discussion_created($format = null) {
 }
 
 function discussion_lastpost_by() {
-	return User::find(Registry::get('discussion')->lastpost_by)->username;
+	$id = Registry::prop('discussion', 'lastpost_by');
+	$user = User::find($id);
+
+	return isset($user->username) ? $user->username : null;
 }
 
 function discussion_lastpost_by_url() {
