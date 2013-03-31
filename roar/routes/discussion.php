@@ -20,10 +20,11 @@ Route::post('discussion/create', array('before' => 'auth-user', 'main' => functi
 	$slug = slug($title);
 	$now = date('y-m-d H:i:s');
 
-	if(Discussion::slug($slug)) {
+	if($discussion = Discussion::slug($slug)) {
 		Input::flash();
 
-		Notify::notice('Discussion already exists, ' . Html::link('discussion/' . $slug, 'View it here'));
+		Notify::notice('Discussion already exists, ' .
+			Html::link('discussion/' . $discussion->slug, 'View it here'));
 
 		return Response::redirect('discussion/create');
 	}
@@ -31,7 +32,7 @@ Route::post('discussion/create', array('before' => 'auth-user', 'main' => functi
 	// get authed user
 	$user = User::find(Auth::user()->id);
 
-	$id = Discussion::create(array(
+	$discussion = Discussion::create(array(
 		'category' => $category,
 		'slug' => $slug,
 
@@ -48,7 +49,7 @@ Route::post('discussion/create', array('before' => 'auth-user', 'main' => functi
 	));
 
 	Post::create(array(
-		'discussion' => $id,
+		'discussion' => $discussion->id,
 		'user' => $user->id,
 		'date' => $now,
 		'body' => $post
