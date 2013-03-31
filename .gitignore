@@ -1,7 +1,12 @@
 .DS_Store
 *.esproj
 .htaccess
+
 /roar/config/dev
 /roar/config/prod
+
+/roar/config/db.php
+/roar/config/app.php
+
 /themes/*
 !/themes/default
