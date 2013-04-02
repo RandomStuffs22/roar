@@ -31,7 +31,7 @@ function category_slug() {
 }
 
 function category_url() {
-	return base_url(category_slug());
+	return uri_to('category/' . category_slug());
 }
 
 function category_post_count() {

@@ -3,7 +3,7 @@
 /*
 	Report post
 */
-Route::get('report/(:num)', array('before' => 'auth-user', 'main' => function($id) {
+Route::get('post/(:num)/report', array('before' => 'auth-user', 'main' => function($id) {
 
 	if( ! $post = Post::find($id)) {
 		return Response::error(404);

@@ -28,62 +28,6 @@ Route::action('csrf', function() {
 });
 
 /*
-	View Index
-*/
-Route::get(array('/', 'discussions', 'discussions/(:num)'), function($page = 1) {
-	$user = Auth::user();
-	$perpage = 10;
-
-	$query = Query::table(Discussion::$table);
-	$select = 'discussions.*';
-
-	if($user) {
-		$select = array('discussions.*', 'user_discussions.viewed');
-		$join = Query::table('user_discussions')->where('user', '=', $user->id);
-
-		$query->left_join(function() use($join) {
-			return array($join, 'user_discussions');
-		}, 'user_discussions.discussion', '=', 'discussions.id');
-	}
-
-	$count = $query->count();
-	$results = $query->sort('lastpost', 'desc')->take($perpage)->skip(($page - 1) * $perpage)->get($select);
-
-	$paginator = new Paginator($results, $count, $page, $perpage, Uri::to('discussions') . '/');
-
-	Registry::set('discussions', new Items($paginator->results));
-	Registry::set('paginator', $paginator->links());
-	Registry::set('categories', new Items(Category::all()));
-
-	return new Template('index');
-});
-
-/*
-	View category
-*/
-Route::get(array('(:any)', '(:any)/(:num)'), function($slug, $page = 1) {
-	if( ! $category = Category::slug($slug)) {
-		return Response::error(404);
-	}
-
-	$perpage = 10;
-	$categories = Category::all();
-	$count = Query::table(Discussion::$table)->where('category', '=', $category->id)->count();
-	$discussions = Discussion::by_category($category->id, ($page - 1) * $perpage, $perpage);
-	$uri = Uri::to($category->slug);
-
-	$paginator = new Paginator($discussions, $count, $page, $perpage, $uri);
-
-	Registry::set('discussions', new Items($paginator->results));
-	Registry::set('paginator', $paginator->links());
-
-	Registry::set('categories', new Items($categories));
-	Registry::set('category', $category);
-
-	return new Template('category');
-});
-
-/*
 	Login
 */
 Route::get('login', function() {

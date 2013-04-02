@@ -12,9 +12,9 @@ Route::get('admin/login', function() {
 	$vars['messages'] = Notify::read();
 	$vars['token'] = Csrf::token();
 
-	return View::make('users/login', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	return View::users('login', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 });
 
 Route::post('admin/login', array('before' => 'csrf', 'main' => function() {
@@ -42,9 +42,9 @@ Route::get('admin/amnesia', function() {
 	$vars['messages'] = Notify::read();
 	$vars['token'] = Csrf::token();
 
-	return View::make('users/amnesia', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	return View::users('amnesia', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 });
 
 Route::post('admin/amnesia', function() {
@@ -102,9 +102,9 @@ Route::get('admin/reset/(:any)', function($key) {
 		return Response::redirect('admin/login');
 	}
 
-	return View::make('users/reset', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	return View::users('reset', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 });
 
 Route::post('admin/reset/(:any)', function($key) {

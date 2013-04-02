@@ -1,7 +1,7 @@
 <?php
 
 function discussions() {
-	$items = Registry::get('discussions', new Items());
+	$items = Registry::get('discussions');
 
 	if($item = $items->valid()) {
 		// register single post
@@ -18,23 +18,23 @@ function discussions() {
 }
 
 function discussion_id() {
-	return Registry::get('discussion')->id;
+	return Registry::prop('discussion', 'id');
 }
 
 function discussion_votes() {
-	return Registry::get('discussion')->votes;
+	return Registry::prop('discussion', 'votes');
 }
 
 function discussion_vote_url() {
-	return base_url('vote/' . discussion_id());
+	return uri_to('discussion/' . discussion_id() . '/vote');
 }
 
 function discussion_replies() {
-	return Registry::get('discussion')->replies;
+	return Registry::prop('discussion', 'replies');
 }
 
 function discussion_views() {
-	return Registry::get('discussion')->views;
+	return Registry::prop('discussion', 'views');
 }
 
 function discussion_unread() {
@@ -50,46 +50,59 @@ function discussion_unread() {
 }
 
 function discussion_created_by() {
-	return User::find(Registry::get('discussion')->created_by)->username;
+	if($id = Registry::prop('discussion', 'created_by')) {
+		if($user = User::find($id)) {
+			return $user->username;
+		}
+	}
+
+	return 'unknown';
 }
 
 function discussion_created_by_url() {
-	return base_url('profiles/' . discussion_created_by());
+	return uri_to('profiles/' . discussion_created_by());
 }
 
 function discussion_created($format = null) {
-	return Date::relative(Registry::get('discussion')->created, $format);
+	if($date = Registry::prop('discussion', 'created')) {
+		return Date::relative($date, $format);
+	}
 }
 
 function discussion_lastpost_by() {
-	$id = Registry::prop('discussion', 'lastpost_by');
-	$user = User::find($id);
+	if($id = Registry::prop('discussion', 'lastpost_by')) {
+		if($user = User::find($id)) {
+			return $user->username;
+		}
+	}
 
-	return isset($user->username) ? $user->username : null;
+	return 'unknown';
 }
 
 function discussion_lastpost_by_url() {
-	return base_url('profiles/' . discussion_lastpost_by());
+	return uri_to('profiles/' . discussion_lastpost_by());
 }
 
 function discussion_lastpost($format = null) {
-	return Date::relative(Registry::get('discussion')->lastpost, $format);
+	if($date = Registry::prop('discussion', 'lastpost')) {
+		return Date::relative($date, $format);
+	}
 }
 
 function discussion_title() {
-	return Registry::get('discussion')->title;
+	return Registry::prop('discussion', 'title');
 }
 
 function discussion_description() {
-	return Registry::get('discussion')->description;
+	return Registry::prop('discussion', 'description');
 }
 
 function discussion_slug() {
-	return Registry::get('discussion')->slug;
+	return Registry::prop('discussion', 'slug');
 }
 
 function discussion_url() {
-	return base_url('discussion/' . discussion_slug());
+	return uri_to('discussion/' . discussion_slug());
 }
 
 function discussion_paging() {
@@ -97,5 +110,13 @@ function discussion_paging() {
 }
 
 function discussion_create_url() {
-	return base_url('discussion/create');
+	return uri_to('discussion/create');
+}
+
+function discussion_edit_url() {
+	return uri_to('admin/discussion/edit/' . Registry::prop('discussion', 'id'));
+}
+
+function discussion_delete_url() {
+	return uri_to('admin/discussion/delete/' . Registry::prop('discussion', 'id'));
 }

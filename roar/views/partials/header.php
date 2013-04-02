@@ -24,17 +24,17 @@
 						</li>
 						<?php foreach(array('dashboard', 'discussions', 'categories', 'users') as $url): ?>
 						<li <?php if(strpos(Uri::current(), $url) !== false) echo 'class="active"'; ?>>
-							<a href="<?php echo url('admin/' . $url); ?>"><?php echo ucfirst(__('common.' . $url, $url)); ?></a>
+							<a href="<?php echo uri_to('admin/' . $url); ?>"><?php echo ucfirst(__('common.' . $url, $url)); ?></a>
 						</li>
 						<?php endforeach; ?>
 					</ul>
 				</nav>
 
-				<a class="btn" href="<?php echo url('logout'); ?>"><?php echo __('common.logout', 'Logout'); ?></a>
+				<a class="btn" href="<?php echo uri_to('logout'); ?>"><?php echo __('common.logout', 'Logout'); ?></a>
 				<a class="btn" href="<?php echo base_url(); ?>"><?php echo __('common.visit_your_site', 'Visit your site'); ?></a>
 
 				<?php else: ?>
-				<a class="login" id="logo" href="<?php echo url('dashboard'); ?>">
+				<a class="login" id="logo" href="<?php echo uri_to('dashboard'); ?>">
 					<img src="<?php echo admin_asset('img/logo.png'); ?>" alt="Anchor CMS">
 				</a>
 				<?php endif; ?>

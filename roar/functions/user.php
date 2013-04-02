@@ -3,7 +3,7 @@
 function user_recent_posts() {
 	$items = Registry::get('recent_posts');
 
-	if($item = $items->valid()) {	
+	if($item = $items->valid()) {
 		Registry::set('post', $items->current());
 
 		$items->next();

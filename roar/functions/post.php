@@ -49,11 +49,11 @@ function post_url() {
 	$count = Post::where('discussion', '=', $post->discussion)->where('id', '<', post_id())->count();
 	$page = ceil(++$count / $perpage);
 
-	return base_url('discussion/' . $post->slug . '/' . $page . '/#post-' . post_id());
+	return uri_to('discussion/' . $post->slug . '/' . $page . '/#post-' . post_id());
 }
 
 function post_user_url() {
-	return base_url('profiles/' . post_user());
+	return uri_to('profiles/' . post_user());
 }
 
 function post_date($format = null) {
@@ -68,7 +68,7 @@ function post_body() {
 }
 
 function post_report_url() {
-	return base_url('report/' . post_id());
+	return uri_to('post/' . post_id() . '/report');
 }
 
 function post_quote_url() {

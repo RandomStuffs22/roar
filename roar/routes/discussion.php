@@ -1,7 +1,41 @@
 <?php
 
 /*
-	Create topic
+	Home page and viewing of all discussions with pagination
+*/
+Route::get(array('/', 'discussions', 'discussions/(:num)'), function($page = 1) {
+	$user = Auth::user();
+
+	// @todo: move into settings
+	$perpage = 10;
+
+	$query = Query::table(Discussion::$table);
+	$select = 'discussions.*';
+
+	// if the user is logged in get viewed timestamps
+	if($user) {
+		$select = array('discussions.*', 'user_discussions.viewed');
+		$join = Query::table('user_discussions')->where('user', '=', $user->id);
+
+		$query->left_join(function() use($join) {
+			return array($join, 'user_discussions');
+		}, 'user_discussions.discussion', '=', 'discussions.id');
+	}
+
+	$count = $query->count();
+	$results = $query->sort('lastpost', 'desc')->take($perpage)->skip(($page - 1) * $perpage)->get($select);
+
+	$paginator = new Paginator($results, $count, $page, $perpage, Uri::to('discussions') . '/');
+
+	Registry::set('discussions', new Items($paginator->results));
+	Registry::set('paginator', $paginator->links());
+	Registry::set('categories', new Items(Category::all()));
+
+	return new Template('index');
+});
+
+/*
+	Create discussion
 */
 Route::get('discussion/create', array('before' => 'auth-user', 'main' => function() {
 	Registry::set('categories', new Items(Category::all()));
@@ -63,7 +97,7 @@ Route::post('discussion/create', array('before' => 'auth-user', 'main' => functi
 }));
 
 /*
-	View discussion
+	View a discussion
 */
 Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slug, $page = 1) {
 	if(is_numeric($slug)) {
@@ -180,7 +214,7 @@ Route::post('discussion/(:any)', array('before' => 'auth-user', 'main' => functi
 /*
 	Up Vote a discussion
 */
-Route::get('vote/(:num)', array('before' => 'auth-user', 'main' => function($id) {
+Route::get('discussion/(:num)/vote', array('before' => 'auth-user', 'main' => function($id) {
 	if( ! $discussion = Discussion::find($id)) {
 		return Response::error(404);
 	}
