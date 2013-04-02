@@ -2,40 +2,53 @@
 
 class Date {
 
-	protected static function time($str) {
-		if(is_numeric($str)) return $str;
+	/*
+	 * Format a date as per users timezone and format
+	 */
+	public static function format($date = 'now', $format = 'jS F, Y') {
+		$date = new DateTime($date, new DateTimeZone('GMT'));
+		$date->setTimezone(new DateTimeZone(Config::app('timezone')));
 
-		if(($time = strtotime($str)) === false) {
-			throw new InvalidArgumentException('Invalid date string [' . $str . ']');
-		}
-
-		return $time;
+		return $date->format($format);
 	}
 
-	public static function format($date, $format = null) {
-		if(is_null($format)) $format = Config::get('settings.date_format');
+	/*
+	 * All database dates are stored as GMT
+	 */
+	public static function mysql($date = 'now') {
+		$date = new DateTime($date, new DateTimeZone('GMT'));
 
-		return date($format, static::time($date));
+		return $date->format('Y-m-d H:i:s');
 	}
 
-	public static function relative($date, $format = null) {
-		$time = static::time($date);
-		$diff = abs(time() - $time);
+	/*
+	 * Human readable relative time
+	 */
+	public static function relative($date, $format = 'jS F, Y') {
+		// format database date into current timezone
+		$date = new DateTime($date, new DateTimeZone('GMT'));
+		$date->setTimezone(new DateTimeZone(Config::app('timezone')));
+
+		// current time in current timezone
+		$now = new DateTime('now');
+
+		// diff in seconds
+		$diff = $now->getTimestamp() - $date->getTimestamp();
 
 		if($diff > 172800) { // 2 days
-			return static::format($time, $format);
+			return $date->format($format);
 		}
 
 		if($diff > 86400) { // 1 day
-			return date('H:i', $time) . ' Yesterday';
+			return $date->format('H:i') . ' Yesterday';
 		}
 
 		if($diff > 43200) { // 12 hours
-			return date('H:i', $time) . ' Today';
+			return $date->format('H:i') . ' Today';
 		}
 
 		if($diff > 21600) { // 6 hours
-			return date('H:i', $time);
+			return $date->format('H:i');
 		}
 
 		if($diff > 3600) { // 1 hour

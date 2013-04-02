@@ -25,7 +25,7 @@ class Discussion extends Record {
 
 			where d.category = :category
 
-			order by d.votes desc, d.lastpost desc
+			order by d.lastpost desc
 
 			limit ' . $perpage . ' offset ' . $offset;
 

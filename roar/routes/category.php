@@ -16,7 +16,7 @@ Route::get(array('category/(:any)', 'category/(:any)/(:num)'), function($slug, $
 	$categories = Category::all();
 	$count = Query::table(Discussion::$table)->where('category', '=', $category->id)->count();
 	$discussions = Discussion::by_category($category->id, ($page - 1) * $perpage, $perpage);
-	$uri = Uri::to($category->slug);
+	$uri = Uri::to('category/' . $category->slug);
 
 	$paginator = new Paginator($discussions, $count, $page, $perpage, $uri);
 

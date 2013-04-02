@@ -52,7 +52,7 @@ Route::post('discussion/create', array('before' => 'auth-user', 'main' => functi
 	$description = Input::get('description');
 
 	$slug = slug($title);
-	$now = date('y-m-d H:i:s');
+	$now = Date::mysql();
 
 	if($discussion = Discussion::slug($slug)) {
 		Input::flash();
@@ -121,14 +121,14 @@ Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slu
 
 		if($query->count()) {
 			$query->update(array(
-				'viewed' => gmdate('Y-m-d H:i:s')
+				'viewed' => Date::mysql()
 			));
 		}
 		else {
 			$query->insert(array(
 				'user' => $user->id,
 				'discussion' => $discussion->id,
-				'viewed' => gmdate('Y-m-d H:i:s')
+				'viewed' => Date::mysql()
 			));
 		}
 	}
@@ -180,7 +180,7 @@ Route::post('discussion/(:any)', array('before' => 'auth-user', 'main' => functi
 	// get authed user
 	$user = User::find(Auth::user()->id);
 
-	$now = gmdate('Y-m-d H:i:s');
+	$now = Date::mysql();
 
 	$post = Post::create(array(
 		'discussion' => $discussion->id,

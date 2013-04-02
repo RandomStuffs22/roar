@@ -63,12 +63,7 @@ Route::get('register', function() {
 });
 
 Route::post('register', function() {
-	$input = array(
-		'name' => Input::get('name'),
-		'email' => Input::get('email'),
-		'username' => Input::get('username'),
-		'password' => Input::get('password')
-	);
+	$input = Input::get(array('name', 'email', 'username', 'password'));
 
 	$validator = new Validator($input);
 
@@ -79,12 +74,11 @@ Route::post('register', function() {
 		->is_email('Please enter your email address');
 
 	$validator->add('unquie_username', function($str) {
-		$user = User::search(array('username' => $str));
-
-		return ! isset($user->id);
+		return User::where('username', 'like', trim($str))->count() == 0;
 	});
 
 	$validator->check('username')
+		->is_alnum('Usernames can only contain letter and numbers')
 		->is_unquie_username('Username is already taken')
 		->is_max(5, 'Please enter a username');
 
@@ -99,18 +93,16 @@ Route::post('register', function() {
 		return Response::redirect('register');
 	}
 
-	User::create(array(
+	$user = User::create(array(
 		'role' => 'user',
-		'registered' => gmdate('Y-m-d H:i:s'),
+		'registered' => Date::mysql(),
 		'name' => $input['name'],
 		'email' => $input['email'],
 		'username' => $input['username'],
 		'password' => Hash::password($input['password'])
 	));
 
-	$user = User::search(array('username' => $input['username']));
-
-	Session::put(Auth::$session, $user);
+	Session::put(Auth::$session, $user->id);
 
 	Notify::success('Your account has been created');
 

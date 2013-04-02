@@ -70,7 +70,7 @@ Route::get('callback', function() {
 	else {
 		$user = User::create(array(
 			'role' => 'user',
-			'registered' => gmdate('Y-m-d H:i:s'),
+			'registered' => Date::mysql(),
 			'name' => $account->name,
 			'username' => $account->screen_name,
 			'password' => '',

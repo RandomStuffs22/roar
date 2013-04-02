@@ -15,7 +15,7 @@ function posts() {
 }
 
 function post_id() {
-	return Registry::get('post')->id;
+	return Registry::prop('post', 'id');
 }
 
 function post_title() {
@@ -29,17 +29,24 @@ function post_title() {
 }
 
 function post_user() {
-	$id = Registry::get('post')->user;
-	$user = User::find($id);
+	if($id = Registry::prop('post', 'user')) {
+		if($user = User::find($id)) {
+			return $user->username;
+		}
 
-	return $user->username;
+	}
 }
 
 function post_user_gravatar($size = 32) {
-	$id = Registry::get('post')->user;
-	$user = User::find($id);
+	$email = 'none';
 
-	return 'http://www.gravatar.com/avatar/' . hash('md5', $user->email) . '/?s=' . $size . '&amp;d=mm';
+	if($id = Registry::prop('post', 'user')) {
+		if($user = User::find($id)) {
+			$email = $user->email;
+		}
+	}
+
+	return 'http://www.gravatar.com/avatar/' . hash('md5', $email) . '/?s=' . $size . '&amp;d=mm';
 }
 
 function post_url() {
@@ -73,4 +80,26 @@ function post_report_url() {
 
 function post_quote_url() {
 	return '#quote-' . post_id();
+}
+
+function post_edit_url() {
+	return uri_to('post/' . post_id() . '/edit');
+}
+
+function post_delete_url() {
+	return uri_to('post/' . post_id() . '/delete');
+}
+
+function post_moderator() {
+	if($user = Auth::user()) {
+		if($user->role == 'administrator') {
+			return true;
+		}
+
+		if($id = Registry::prop('post', 'user')) {
+			if($author = User::find($id)) {
+				return $author->id === $user->id;
+			}
+		}
+	}
 }
