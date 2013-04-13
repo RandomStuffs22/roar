@@ -174,12 +174,8 @@ Route::post('discussion/(:any)', array('before' => 'auth-user', 'main' => functi
 		return Response::redirect('discussion/' . $discussion->slug . '/' . $page);
 	}
 
-	$markdown = new Markdown;
-	$reply = $markdown->transform($reply);
-
 	// get authed user
-	$user = User::find(Auth::user()->id);
-
+	$user = Auth::user();
 	$now = Date::mysql();
 
 	$post = Post::create(array(
