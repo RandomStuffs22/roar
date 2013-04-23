@@ -11,7 +11,7 @@ class Category extends Record {
 	public static function dropdown() {
 		$options = array();
 
-		foreach(static::all() as $itm) {
+		foreach(static::get() as $itm) {
 			$options[$itm->id] = $itm->title;
 		}
 
@@ -20,10 +20,13 @@ class Category extends Record {
 
 	public static function all() {
 		$sql = '
-			select categories.*, coalesce(count(discussions.id), 0) as posts
+			select categories.*, coalesce(discussions.total, 0) as posts
+
 			from categories
-			left join discussions on (discussions.category = categories.id)
-			group by discussions.category
+
+			left join (
+				select count(id) as total, category from discussions group by category
+			) as discussions on (discussions.category = categories.id)
 		';
 
 		list($result, $statement) = DB::ask($sql);

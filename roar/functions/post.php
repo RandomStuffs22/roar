@@ -33,8 +33,9 @@ function post_user() {
 		if($user = User::find($id)) {
 			return $user->username;
 		}
-
 	}
+
+	return '[deleted]';
 }
 
 function post_user_gravatar($size = 32) {
@@ -50,13 +51,9 @@ function post_user_gravatar($size = 32) {
 }
 
 function post_url() {
-	$perpage = 10;
 	$post = Registry::get('post');
 
-	$count = Post::where('discussion', '=', $post->discussion)->where('id', '<', post_id())->count();
-	$page = ceil(++$count / $perpage);
-
-	return uri_to('discussion/' . $post->slug . '/' . $page . '/#post-' . post_id());
+	return uri_to($post->uri());
 }
 
 function post_user_url() {
@@ -64,14 +61,16 @@ function post_user_url() {
 }
 
 function post_date($format = null) {
-	return Date::relative(Registry::get('post')->date, $format);
+	$date = Registry::prop('post', 'date');
+
+	return Date::relative($date, $format);
 }
 
 function post_body() {
 	$markdown = new Markdown;
-	$body = $markdown->transform(Registry::get('post')->body);
+	$body = Registry::prop('post', 'body');
 
-	return $body;
+	return $markdown->transform($body);
 }
 
 function post_report_url() {
@@ -91,15 +90,7 @@ function post_delete_url() {
 }
 
 function post_moderator() {
-	if($user = Auth::user()) {
-		if($user->role == 'administrator') {
-			return true;
-		}
-
-		if($id = Registry::prop('post', 'user')) {
-			if($author = User::find($id)) {
-				return $author->id === $user->id;
-			}
-		}
+	if($post = Registry::get('post')) {
+		return $post->is_moderator();
 	}
 }

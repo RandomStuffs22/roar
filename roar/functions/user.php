@@ -43,3 +43,13 @@ function user_registered() {
 function user_guest() {
 	return Auth::guest();
 }
+
+function user_moderator() {
+	if($user = Auth::user()) {
+		if($user->role == 'administrator') {
+			return true;
+		}
+	}
+
+	return false;
+}

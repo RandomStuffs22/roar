@@ -114,9 +114,9 @@ function discussion_create_url() {
 }
 
 function discussion_edit_url() {
-	return uri_to('admin/discussion/edit/' . Registry::prop('discussion', 'id'));
+	return uri_to('discussion/' . discussion_id() . '/edit');
 }
 
 function discussion_delete_url() {
-	return uri_to('admin/discussion/delete/' . Registry::prop('discussion', 'id'));
+	return uri_to('discussion/' . discussion_id() . '/delete');
 }

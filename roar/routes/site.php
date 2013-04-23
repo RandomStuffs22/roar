@@ -112,6 +112,6 @@ Route::post('register', function() {
 /*
 	404 catch all
 */
-Route::error('404', function() {
-	return Response::error(404);
+Route::not_found(function() {
+	return Response::create(new Template('404'), 404);
 });
