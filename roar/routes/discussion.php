@@ -91,6 +91,48 @@ Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slu
 Route::collection(array('before' => 'auth-user'), function() {
 
 	/*
+		Unread discussions
+	*/
+	Route::get(array('unread', 'unread/(:num)'), function($page = 1) {
+		$user = Auth::user();
+
+		// @todo: move into settings
+		$perpage = 10;
+
+		$sql = 'SELECT COUNT(discussions.id)
+			FROM discussions
+			LEFT JOIN (SELECT discussion, viewed FROM user_discussions WHERE user = ?) as user_discussions
+			ON (user_discussions.discussion = discussions.id)
+			WHERE user_discussions.viewed < discussions.lastpost
+			OR user_discussions.viewed IS NULL
+		';
+		list($result, $statement) = DB::ask($sql, array($user->id));
+
+		$count = $statement->fetchColumn();
+
+		$sql = 'SELECT discussions.*, user_discussions.viewed
+			FROM discussions
+			LEFT JOIN (SELECT discussion, viewed FROM user_discussions WHERE user = ?) as user_discussions
+			ON (user_discussions.discussion = discussions.id)
+			WHERE user_discussions.viewed < discussions.lastpost
+			OR user_discussions.viewed IS NULL
+			ORDER BY lastpost DESC
+			LIMIT ' . $perpage . ' OFFSET ' . (($page - 1) * $perpage) . '
+		';
+		list($result, $statement) = DB::ask($sql, array($user->id));
+
+		$results = $statement->fetchAll(PDO::FETCH_OBJ);
+
+		$paginator = new Paginator($results, $count, $page, $perpage, Uri::to('unread'));
+
+		Registry::set('discussions', new Items($paginator->results));
+		Registry::set('paginator', $paginator->links());
+		Registry::set('categories', new Items(Category::all()));
+
+		return new Template('index');
+	});
+
+	/*
 		Create discussion
 	*/
 	Route::get('discussion/create', function() {
