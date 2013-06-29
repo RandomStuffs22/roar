@@ -6,7 +6,7 @@
 
 			<section class="content">
 
-				<form method="post" action="<?php echo url('categories/edit/' . $category->id); ?>" novalidate>
+				<form method="post" action="<?php echo Uri::to('categories/edit/' . $category->id); ?>" novalidate>
 
 					<input name="token" type="hidden" value="<?php echo $token; ?>">
 
@@ -35,7 +35,7 @@
 
 					<p class="buttons">
 						<button type="submit"><?php echo __('categories.save', 'Save'); ?></button>
-						<a href="<?php echo url('categories'); ?>"><?php echo __('categories.return_categories', 'Return to categories'); ?></a>
+						<a href="<?php echo Uri::to('categories'); ?>"><?php echo __('categories.return_categories', 'Return to categories'); ?></a>
 					</p>
 
 				</form>

@@ -5,11 +5,15 @@
 */
 Route::get(array('admin/categories', 'admin/categories/(:num)'), array('before' => 'auth', 'main' => function($page = 1) {
 	$vars['messages'] = Notify::read();
-	$vars['categories'] = Category::paginate($page);
 
-	return View::make('categories/index', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	$categories = Category::take(10)->skip(10 * ($page - 1))->get();
+	$count = Category::count();
+
+	$vars['categories'] = new Paginator($categories, $count, $page, 10, 'admin/categories');
+
+	return View::create('categories/index', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 }));
 
 /*
@@ -20,9 +24,9 @@ Route::get('admin/categories/edit/(:num)', array('before' => 'auth', 'main' => f
 	$vars['token'] = Csrf::token();
 	$vars['category'] = Category::find($id);
 
-	return View::make('categories/edit', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	return View::create('categories/edit', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 }));
 
 Route::post('admin/categories/edit/(:num)', array('before' => 'auth', 'main' => function($id) {
@@ -61,9 +65,9 @@ Route::get('admin/categories/add', array('before' => 'auth', 'main' => function(
 	$vars['messages'] = Notify::read();
 	$vars['token'] = Csrf::token();
 
-	return View::make('categories/add', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	return View::create('categories/add', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 }));
 
 Route::post('admin/categories/add', array('before' => 'auth', 'main' => function() {

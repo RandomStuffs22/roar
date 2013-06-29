@@ -22,7 +22,7 @@
 								<img src="<?php echo admin_asset('img/logo.png'); ?>" alt="Anchor CMS">
 							</a>
 						</li>
-						<?php foreach(array('dashboard', 'discussions', 'categories', 'users') as $url): ?>
+						<?php foreach(array('dashboard', 'categories', 'users') as $url): ?>
 						<li <?php if(strpos(Uri::current(), $url) !== false) echo 'class="active"'; ?>>
 							<a href="<?php echo uri_to('admin/' . $url); ?>"><?php echo ucfirst(__('common.' . $url, $url)); ?></a>
 						</li>

@@ -30,6 +30,7 @@ Route::get(array('search/(:any)', 'search/(:any)/(:num)'), function($slug = '', 
 	$count = $query->count();
 
 	$posts = $query->take($perpage)
+		->sort('date', 'desc')
 		->skip(($offset - 1) * $perpage)
 		->get(array('posts.*', 'discussions.title', 'discussions.slug'));
 

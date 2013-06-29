@@ -113,5 +113,7 @@ Route::post('register', function() {
 	404 catch all
 */
 Route::not_found(function() {
-	return Response::create(new Template('404'), 404);
+	$view = new Template('404');
+
+	return Response::create($view->yield(), 404);
 });

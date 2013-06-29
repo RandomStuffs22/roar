@@ -6,7 +6,7 @@
 
 			<section class="content">
 
-				<form method="post" action="<?php echo url('users/edit/' . $user->id); ?>" novalidate>
+				<form method="post" action="<?php echo Uri::to('users/edit/' . $user->id); ?>" novalidate>
 
 					<input name="token" type="hidden" value="<?php echo $token; ?>">
 
@@ -73,7 +73,7 @@
 
 					<p class="buttons">
 						<button type="submit"><?php echo __('users.save', 'Save'); ?></button>
-						<a href="<?php echo url('users'); ?>"><?php echo __('users.return_users'); ?></a>
+						<a href="<?php echo Uri::to('users'); ?>"><?php echo __('users.return_users'); ?></a>
 					</p>
 
 				</form>

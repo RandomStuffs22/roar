@@ -47,7 +47,7 @@ Route::get('callback', function() {
 	$api->set_token($token);
 
 	// setup users account
-	$response = $api->get('1/account/verify_credentials.json');
+	$response = $api->get('1.1/account/verify_credentials.json');
 
 	if($response === false) {
 		Notify::error($api->error());

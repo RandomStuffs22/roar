@@ -5,11 +5,15 @@
 */
 Route::get(array('admin/users', 'admin/users/(:num)'), array('before' => 'auth', 'main' => function($page = 1) {
 	$vars['messages'] = Notify::read();
-	$vars['users'] = User::paginate($page);
 
-	return View::make('users/index', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	$users = User::take(10)->skip(10 * ($page - 1))->get();
+	$count = User::count();
+
+	$vars['users'] = new Paginator($users, $count, $page, 10, 'admin/users');
+
+	return View::create('users/index', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 }));
 
 /*
@@ -21,9 +25,9 @@ Route::get('admin/users/edit/(:num)', array('before' => 'auth', 'main' => functi
 	$vars['user'] = User::find($id);
 	$vars['roles'] = array('administrator' => __('users.administrator'), 'user' => __('users.user'));
 
-	return View::make('users/edit', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	return View::create('users/edit', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 }));
 
 Route::post('admin/users/edit/(:num)', array('before' => 'auth', 'main' => function($id) {
@@ -76,9 +80,9 @@ Route::get('admin/users/add', array('before' => 'auth', 'main' => function() {
 	$vars['statuses'] = array('inactive' => __('users.inactive'), 'active' => __('users.active'));
 	$vars['roles'] = array('administrator' => __('users.administrator'), 'editor' => __('users.editor'), 'user' => __('users.user'));
 
-	return View::make('users/add', $vars)
-		->nest('header', 'partials/header')
-		->nest('footer', 'partials/footer');
+	return View::create('users/add', $vars)
+		->partial('header', 'partials/header')
+		->partial('footer', 'partials/footer');
 }));
 
 Route::post('admin/users/add', array('before' => 'auth', 'main' => function() {
