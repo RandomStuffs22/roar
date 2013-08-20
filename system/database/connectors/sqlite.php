@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use PDO;
@@ -16,18 +17,11 @@ use System\Database\Connector;
 class Sqlite extends Connector {
 
 	/**
-	 * The sqlite left wrapper
+	 * The sqlite wrapper
 	 *
 	 * @var string
 	 */
-	public $lwrap = '[';
-
-	/**
-	 * The sqlite right wrapper
-	 *
-	 * @var string
-	 */
-	public $rwrap = ']';
+	public $wrapper = '[%s]';
 
 	/**
 	 * Create a new sqlite connector

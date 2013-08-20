@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use Memcache as M;
@@ -16,19 +17,16 @@ use System\Session\Driver;
 
 class Memcache extends Driver {
 
-	private $key;
+	protected $server;
 
-	public $server;
-
-	public function __construct($config) {
+	public function __construct($config, $key) {
 		$this->config = $config;
-		$this->key = Config::app('key');
-
-		// setup the memcache server
-		extract(Config::cache('memcache'));
-
+		$this->key = $key;
 		$this->server = new M;
-		$this->server->addServer($host, $port);
+
+		foreach(Config::cache('memcache', array()) as $server) {
+			$this->server->addServer($server['host'], $server['port']);
+		}
 	}
 
 	public function read($id) {

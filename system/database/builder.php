@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 abstract class Builder {
@@ -73,6 +74,12 @@ abstract class Builder {
 	 * @return string
 	 */
 	public function wrap_table($value) {
+		if($this->connection->table_prefix) {
+			if(strpos($value, $this->connection->table_prefix) === 0) {
+				return $this->wrap_value($value);
+			}
+		}
+
 		return $this->wrap_value($this->connection->table_prefix . $value);
 	}
 
@@ -83,11 +90,7 @@ abstract class Builder {
 	 * @return string
 	 */
 	public function wrap_value($value) {
-		// trim left if already escaped
-		$value = $this->connection->lwrap . ltrim($value, $this->connection->lwrap);
-
-		// trim right if already escaped
-		return rtrim($value, $this->connection->rwrap) . $this->connection->rwrap;
+		return sprintf($this->connection->wrapper, $value);
 	}
 
 	/**
@@ -97,13 +100,7 @@ abstract class Builder {
 	 * @return string
 	 */
 	public function placeholders($length, $holder = '?') {
-		$holders = array();
-
-		for($i = 0; $i < $length; $i++) {
-			$holders[] = $holder;
-		}
-
-		return implode(', ', $holders);
+		return implode(', ', array_fill(0, $length, $holder));
 	}
 
 	/**

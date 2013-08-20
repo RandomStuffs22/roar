@@ -115,5 +115,5 @@ Route::post('register', function() {
 Route::not_found(function() {
 	$view = new Template('404');
 
-	return Response::create($view->yield(), 404);
+	return Response::create($view->render(), 404);
 });

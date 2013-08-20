@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use ErrorException;
@@ -117,7 +118,10 @@ class Uri {
 	private static function format($uri, $server) {
 		// Remove all characters except letters,
 		// digits and $-_.+!*'(),{}|\\^~[]`<>#%";/?:@&=.
-		$uri = filter_var(rawurldecode($uri), FILTER_SANITIZE_URL);
+		$uri = filter_var($uri, FILTER_SANITIZE_URL);
+
+		// convert encoding
+		$uri = rawurldecode($uri);
 
 		// remove script path/name
 		$uri = static::remove_script_name($uri, $server);

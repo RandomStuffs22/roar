@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 abstract class Driver {
@@ -20,12 +21,20 @@ abstract class Driver {
 	public $config;
 
 	/**
+	 * The application key
+	 *
+	 * @var array
+	 */
+	public $key;
+
+	/**
 	 * Create a new instance of a driver
 	 *
 	 * @param array
 	 */
-	public function __construct($config) {
+	public function __construct($config, $key) {
 		$this->config = $config;
+		$this->key = $key;
 	}
 
 	/**

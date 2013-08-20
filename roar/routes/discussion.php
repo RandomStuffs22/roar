@@ -35,6 +35,40 @@ Route::get(array('/', 'discussions', 'discussions/(:num)'), function($page = 1) 
 });
 
 /*
+	Home page and viewing of all discussions with pagination
+*/
+Route::get(array('hot', 'hot/(:num)'), function($page = 1) {
+	$user = Auth::user();
+
+	// @todo: move into settings
+	$perpage = 10;
+
+	$query = Query::table(Discussion::$table);
+	$select = 'discussions.*';
+
+	// if the user is logged in get viewed timestamps
+	if($user) {
+		$select = array('discussions.*', 'user_discussions.viewed');
+		$join = Query::table('user_discussions')->where('user', '=', $user->id);
+
+		$query->left_join(function() use($join) {
+			return array($join, 'user_discussions');
+		}, 'user_discussions.discussion', '=', 'discussions.id');
+	}
+
+	$count = $query->count();
+	$results = $query->sort('views', 'desc')->take($perpage)->skip(($page - 1) * $perpage)->get($select);
+
+	$paginator = new Paginator($results, $count, $page, $perpage, Uri::to('discussions') . '/');
+
+	Registry::set('discussions', new Items($paginator->results));
+	Registry::set('paginator', $paginator->links());
+	Registry::set('categories', new Items(Category::all()));
+
+	return new Template('index');
+});
+
+/*
 	View a discussion
 */
 Route::get(array('discussion/(:any)', 'discussion/(:any)/(:num)'), function($slug, $page = 1) {
@@ -192,6 +226,8 @@ Route::collection(array('before' => 'auth-user'), function() {
 			'lastpost' => $now,
 
 			'replies' => 1,
+			'views' => 0,
+			'votes' => 0,
 
 			'title' => $input['title'],
 			'description' => $input['description']

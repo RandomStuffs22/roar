@@ -1,4 +1,4 @@
-<?php namespace System\Error;
+<?php namespace System\Error\Handlers;
 
 /**
  * Nano
@@ -7,13 +7,13 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
-use Exception;
-use System\Error\Message;
+use System\Error\Handler;
 
-class Cli extends Message {
+class Cli extends Handler {
 
 	/**
 	 * Check if php is running on windows
@@ -49,21 +49,12 @@ class Cli extends Message {
 	 * Cli Exception error message
 	 */
 	public function response() {
-		if($this->detailed) {
-			$this->highlight(PHP_EOL . 'Uncaught Exception');
-			$this->write($this->exception->getMessage() . PHP_EOL);
+		$this->highlight(PHP_EOL . 'Uncaught Exception');
+		$this->write($this->exception->getMessage() . PHP_EOL);
+		$this->write($this->exception->getFile() . ':' . $this->exception->getLine() . PHP_EOL);
 
-			$this->highlight('Origin');
-
-			$file = substr($this->exception->getFile(), strlen(PATH));
-			$this->write($file . ' on line ' . $this->exception->getLine() . PHP_EOL);
-
-			$this->highlight('Trace');
-			$this->write($this->exception->getTraceAsString() . PHP_EOL);
-		}
-		else {
-			$this->highlight('Internal Server Error');
-		}
+		$this->highlight('Trace');
+		$this->write($this->exception->getTraceAsString() . PHP_EOL);
 	}
 
 }

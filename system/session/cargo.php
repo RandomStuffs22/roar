@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use System\Arr;
@@ -58,7 +59,6 @@ class Cargo {
 
 		// make sure we have some data, if not lets start again
 		if($data = $this->driver->read($this->id)) {
-			// set the data to an empty array
 			$this->data = $data;
 		}
 		else {

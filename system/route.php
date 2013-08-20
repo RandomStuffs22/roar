@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use Closure;
@@ -136,7 +137,7 @@ class Route {
 	 * @return object|null
 	 */
 	public function before() {
-		return $this->callback(__METHOD__);
+		return $this->callback('before', $this->args);
 	}
 
 	/**
@@ -146,7 +147,7 @@ class Route {
 	 * @return object|null
 	 */
 	public function after($response) {
-		return $this->callback(__METHOD__);
+		return $this->callback('after', array($response));
 	}
 
 	/**
@@ -155,10 +156,14 @@ class Route {
 	 * @param string
 	 * @return object|null
 	 */
-	public function callback($name) {
-		if(isset($this->callbacks[$name])) {
-			foreach(explode(',', $this->callbacks[$name]) as $action) {
-				return call_user_func(Router::$actions[$action], $response);
+	public function callback($name, $args = array()) {
+		if( ! isset($this->callbacks[$name])) return;
+
+		$callbacks = explode(',', $this->callbacks[$name]);
+
+		foreach($callbacks as $action) {
+			if($response = call_user_func_array(Router::$actions[$action], $args)) {
+				return $response;
 			}
 		}
 	}
@@ -187,7 +192,7 @@ class Route {
 
 		// If the response was a view get the output and create response
 		if($response instanceof View) {
-			$response = $response->yield();
+			$response = $response->render();
 		}
 		// Invoke object tostring method
 		elseif(is_object($response) and method_exists($response, '__toString')) {

@@ -7,10 +7,12 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use ErrorException;
+use ReflectionClass;
 use System\Session\Cargo;
 
 class Session {
@@ -20,7 +22,7 @@ class Session {
 	 *
 	 * @var array
 	 */
-	public static $cargo;
+	protected static $cargo;
 
 	/**
 	 * Create a new session driver object
@@ -28,20 +30,9 @@ class Session {
 	 * @param array
 	 */
 	public static function factory($config) {
-		switch($config['driver']) {
-			case 'memcache':
-				return new Session\Drivers\Memcache($config);
-			case 'memcached':
-				return new Session\Drivers\Memcached($config);
-			case 'cookie':
-				return new Session\Drivers\Cookie($config);
-			case 'database':
-				return new Session\Drivers\Database($config);
-			case 'runtime':
-				return new Session\Drivers\Runtime($config);
-		}
+		$ref = new ReflectionClass('\\' . __NAMESPACE__ . '\\Session\\Drivers\\' . ucfirst($config['driver']));
 
-		throw new ErrorException('Unknown session driver');
+		return $ref->newInstance($config, Config::app('key'));
 	}
 
 	/**
@@ -53,30 +44,10 @@ class Session {
 		if(is_null(static::$cargo)) {
 			$driver = static::factory(Config::session());
 
-			static::$cargo = new Cargo($driver, Config::app('key'));
+			static::$cargo = new Cargo($driver);
 		}
 
 		return static::$cargo;
-	}
-
-	/**
-	 * Read the current session using the driver set in the config file
-	 */
-	public static function read() {
-		if(is_null(static::$cargo)) {
-			$driver = static::factory(Config::session());
-
-			static::$cargo = new Cargo($driver, Config::app('key'));
-		}
-
-		static::instance()->read();
-	}
-
-	/**
-	 * Write the current session using the driver set in the config file
-	 */
-	public static function write() {
-		static::instance()->write();
 	}
 
 	/**
@@ -86,13 +57,7 @@ class Session {
 	 * @param array
 	 */
 	public static function __callStatic($method, $arguments) {
-		$cargo = static::instance();
-
-		if(method_exists($cargo, $method)) {
-			return call_user_func_array(array($cargo, $method), $arguments);
-		}
-
-		throw new ErrorException('Unknown session method');
+		return call_user_func_array(array(static::instance(), $method), $arguments);
 	}
 
 }

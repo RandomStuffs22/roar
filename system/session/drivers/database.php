@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use System\Session\Driver;
@@ -15,7 +16,7 @@ use System\Database\Query;
 
 class Database extends Driver {
 
-	public $exists = false;
+	protected $exists = false;
 
 	public function read($id) {
 		extract($this->config);
@@ -31,7 +32,7 @@ class Database extends Driver {
 		if($result = $query->fetch(array('data'))) {
 			$this->exists = true;
 
-			if($data = @unserialize($result->data)) {
+			if($data = unserialize($result->data)) {
 				return $data;
 			}
 		}
@@ -48,12 +49,13 @@ class Database extends Driver {
 
 		$expire = time() + $lifetime;
 		$data = serialize($cargo);
+		$query = Query::table($table);
 
 		if($this->exists) {
-			Query::table($table)->where('id', '=', $id)->update(array('expire' => $expire, 'data' => $data));
+			$query->where('id', '=', $id)->update(array('expire' => $expire, 'data' => $data));
 		}
 		else {
-			Query::table($table)->insert(array('id' => $id, 'expire' => $expire, 'data' => $data));
+			$query->insert(array('id' => $id, 'expire' => $expire, 'data' => $data));
 		}
 	}
 

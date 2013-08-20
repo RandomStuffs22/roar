@@ -7,12 +7,12 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use System\Cookie as C;
 use System\Session\Driver;
-use Exception;
 
 class Cookie extends Driver {
 

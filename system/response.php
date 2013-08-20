@@ -7,7 +7,8 @@
  *
  * @package		nano
  * @link		http://madebykieron.co.uk
- * @copyright	http://unlicense.org/
+ * @copyright	Copyright 2013 Kieron Wilson
+ * @license		http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
 use System\Response\Status;
@@ -69,8 +70,8 @@ class Response {
 	 * @param int
 	 * @return object
 	 */
-	public static function error($status, $vars = array()) {
-		return static::create(View::create('error/' . $status, $vars)->yield(), $status);
+	public static function error($status, $output = '') {
+		return static::create($output, $status);
 	}
 
 	/**
